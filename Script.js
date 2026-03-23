@@ -1,3 +1,7 @@
+/* ================================ */
+/* BODMAS Game Logic */
+/* ================================ */
+
 let score = 0;
 let level = 1;
 let questionCount = 0;
@@ -7,23 +11,26 @@ let timeLeft = 10;
 let timer;
 let correct;
 
+// 1. Start game after instructions
 function startGame() {
     document.getElementById("instructions").style.display = "none";
     document.getElementById("gameContent").style.display = "block";
+    document.getElementById("endScreen").style.display = "none"; // Hide end screen if restarting
     resetGame();
     generateQuestion();
 }
 
-// FIX 1: Define resetGame to clear stats when a level starts
+// 2. Reset stats for the level
 function resetGame() {
     score = 0;
     questionCount = 0;
     updateScoreUI();
-    document.getElementById("endScreen").style.display = "none";
     document.getElementById("level").innerText = `Level: ${level}`;
 }
 
+// 3. Timer for each question
 function startTimer() {
+    // Level 1 = 10s, Level 2 = 20s
     timeLeft = (level === 2) ? 20 : 10;
     document.getElementById("timer").innerText = timeLeft;
 
@@ -40,7 +47,10 @@ function startTimer() {
     }, 1000);
 }
 
+// 4. Generate a new question
 function generateQuestion() {
+    clearInterval(timer);
+
     if (questionCount >= maxQuestions) {
         endGame();
         return;
@@ -48,18 +58,19 @@ function generateQuestion() {
 
     document.getElementById("nextBtn").style.display = "none";
     document.getElementById("result").innerText = "";
-    
-    // Logic for numbers based on level
+
     let max = level * 10;
     let a = Math.floor(Math.random() * max) + 1;
     let b = Math.floor(Math.random() * max) + 1;
     let c = Math.floor(Math.random() * max) + 1;
 
+    // BODMAS: Multiplication happens first
     correct = a + (b * c);
 
     document.getElementById("question").innerText = `${a} + ${b} × ${c}`;
     document.getElementById("questionNumber").innerText = `Question ${questionCount + 1} of ${maxQuestions}`;
 
+    // Create answer options
     let options = [correct, correct + 2, correct - 2, correct + 5];
     options = shuffleArray(options);
 
@@ -77,6 +88,7 @@ function generateQuestion() {
     startTimer();
 }
 
+// 5. Check selected answer
 function checkAnswer(selected, btn) {
     clearInterval(timer);
     disableOptions();
@@ -84,52 +96,63 @@ function checkAnswer(selected, btn) {
     if (selected === correct) {
         score++;
         document.getElementById("result").innerText = "✅ Correct!";
-        btn.style.backgroundColor = "lightgreen"; // Quick visual feedback
+        btn.classList.add("correct"); // Triggers your CSS animation
     } else {
         document.getElementById("result").innerText = `❌ Wrong! Correct is ${correct}`;
-        btn.style.backgroundColor = "tomato";
+        btn.classList.add("wrong"); // Triggers your CSS animation
+        
+        // Highlight the actual correct button
+        let buttons = document.querySelectorAll("#options button");
+        buttons.forEach(b => {
+            if (parseInt(b.innerText) === correct) b.classList.add("correct");
+        });
     }
 
     updateScoreUI();
     document.getElementById("nextBtn").style.display = "block";
 }
 
-// FIX 2: Updated helper to match your HTML ID "scoreBox"
+// 6. Update the Score UI (Matches your HTML ID scoreBox)
 function updateScoreUI() {
     document.getElementById("scoreBox").innerText = `Score: ${score} / ${maxQuestions}`;
 }
 
+// 7. Utility: Disable buttons after clicking
 function disableOptions() {
     let buttons = document.querySelectorAll("#options button");
     buttons.forEach(btn => btn.disabled = true);
 }
 
+// 8. Utility: Shuffle Options
 function shuffleArray(array) {
-    return array.sort(() => Math.random() - 0.5);
+    for (let i = array.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
 }
 
-// FIX 3: Complete the endGame logic
+// 9. End Level Logic
 function endGame() {
     clearInterval(timer);
     document.getElementById("options").innerHTML = "";
+    document.getElementById("nextBtn").style.display = "none";
     document.getElementById("endScreen").style.display = "block";
-    
-    const finalMsg = document.getElementById("finalMessage");
+
+    let finalMsg = document.getElementById("finalMessage");
     if (score >= maxScoreToPass) {
-        finalMsg.innerText = `🎉 Level Passed! Score: ${score}/${maxQuestions}`;
+        finalMsg.innerText = `🎉 Level ${level} Passed! Score: ${score}/${maxQuestions}`;
     } else {
         finalMsg.innerText = `❌ Level Failed! Score: ${score}/${maxQuestions}. Try again!`;
     }
 }
 
-// Functions for the end screen buttons
-function restartLevel() {
-    resetGame();
-    generateQuestion();
+// 10. Navigation functions
+function nextLevel() {
+    level = 2; // Sets it to level 2
+    startGame();
 }
 
-function nextLevel() {
-    level = 2; // Or level++
-    resetGame();
-    generateQuestion();
+function restartLevel() {
+    startGame(); // Restarts the current level
 }
