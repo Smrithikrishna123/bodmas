@@ -1,23 +1,28 @@
 let score = 0;
 let level = 1;
 let questionCount = 0;
-let maxQuestions = 10;
-let maxScoreToPass = 5;
-let maxLevel = 2;
+const maxQuestions = 10;
+const maxScoreToPass = 5;
 let timeLeft = 10;
 let timer;
+let correct;
 
-let a, b, c, correct;
-
-// Start game after instructions
 function startGame() {
     document.getElementById("instructions").style.display = "none";
     document.getElementById("gameContent").style.display = "block";
     resetGame();
-    generateQuestion(); // first question appears immediately
+    generateQuestion();
 }
 
-// Timer for each question
+// FIX 1: Define resetGame to clear stats when a level starts
+function resetGame() {
+    score = 0;
+    questionCount = 0;
+    updateScoreUI();
+    document.getElementById("endScreen").style.display = "none";
+    document.getElementById("level").innerText = `Level: ${level}`;
+}
+
 function startTimer() {
     timeLeft = (level === 2) ? 20 : 10;
     document.getElementById("timer").innerText = timeLeft;
@@ -35,10 +40,7 @@ function startTimer() {
     }, 1000);
 }
 
-// Generate a new question
 function generateQuestion() {
-    clearInterval(timer);
-
     if (questionCount >= maxQuestions) {
         endGame();
         return;
@@ -46,11 +48,12 @@ function generateQuestion() {
 
     document.getElementById("nextBtn").style.display = "none";
     document.getElementById("result").innerText = "";
-
+    
+    // Logic for numbers based on level
     let max = level * 10;
-    a = Math.floor(Math.random() * max) + 1;
-    b = Math.floor(Math.random() * max) + 1;
-    c = Math.floor(Math.random() * max) + 1;
+    let a = Math.floor(Math.random() * max) + 1;
+    let b = Math.floor(Math.random() * max) + 1;
+    let c = Math.floor(Math.random() * max) + 1;
 
     correct = a + (b * c);
 
@@ -74,16 +77,6 @@ function generateQuestion() {
     startTimer();
 }
 
-// Shuffle array
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        let j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
-
-// Check selected answer
 function checkAnswer(selected, btn) {
     clearInterval(timer);
     disableOptions();
@@ -91,36 +84,52 @@ function checkAnswer(selected, btn) {
     if (selected === correct) {
         score++;
         document.getElementById("result").innerText = "✅ Correct!";
-        btn.classList.add("correct");
+        btn.style.backgroundColor = "lightgreen"; // Quick visual feedback
     } else {
         document.getElementById("result").innerText = `❌ Wrong! Correct is ${correct}`;
-        btn.classList.add("wrong");
-
-        // Highlight correct option
-        let buttons = document.querySelectorAll("#options button");
-        buttons.forEach(b => {
-            if (Number(b.innerText) === correct) b.classList.add("correct");
-        });
+        btn.style.backgroundColor = "tomato";
     }
 
-    document.getElementById("score").innerText = `${score} / ${maxQuestions}`;
-
-    setTimeout(() => {
-        document.getElementById("nextBtn").style.display = "block";
-    }, 600);
+    updateScoreUI();
+    document.getElementById("nextBtn").style.display = "block";
 }
 
-// Disable all options
+// FIX 2: Updated helper to match your HTML ID "scoreBox"
+function updateScoreUI() {
+    document.getElementById("scoreBox").innerText = `Score: ${score} / ${maxQuestions}`;
+}
+
 function disableOptions() {
     let buttons = document.querySelectorAll("#options button");
     buttons.forEach(btn => btn.disabled = true);
 }
 
-// End the level
+function shuffleArray(array) {
+    return array.sort(() => Math.random() - 0.5);
+}
+
+// FIX 3: Complete the endGame logic
 function endGame() {
     clearInterval(timer);
     document.getElementById("options").innerHTML = "";
-    document.getElementById("nextBtn").style.display = "none";
+    document.getElementById("endScreen").style.display = "block";
+    
+    const finalMsg = document.getElementById("finalMessage");
+    if (score >= maxScoreToPass) {
+        finalMsg.innerText = `🎉 Level Passed! Score: ${score}/${maxQuestions}`;
+    } else {
+        finalMsg.innerText = `❌ Level Failed! Score: ${score}/${maxQuestions}. Try again!`;
+    }
+}
 
-    let message = (score >= maxScoreToPass) ?
-        `🎉 Great! You passed Level
+// Functions for the end screen buttons
+function restartLevel() {
+    resetGame();
+    generateQuestion();
+}
+
+function nextLevel() {
+    level = 2; // Or level++
+    resetGame();
+    generateQuestion();
+}
