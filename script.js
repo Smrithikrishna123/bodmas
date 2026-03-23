@@ -1,8 +1,8 @@
 let score = 0;
 let level = 1;
 let questionCount = 0;
-let maxQuestions = 10;      // total questions per level
-let maxScoreToPass = 5;     // score needed to pass
+let maxQuestions = 10;
+let maxScoreToPass = 5;
 let maxLevel = 2;
 let timeLeft = 10;
 let timer;
@@ -11,7 +11,6 @@ let correct;
 
 // Start game
 function startGame() {
-    alert("start game clicl");
     document.getElementById("instructions").style.display = "none";
     document.getElementById("gameContent").style.display = "block";
     resetGame();
@@ -55,11 +54,10 @@ function generateQuestion() {
 
     correct = a + (b * c);
 
-    document.getElementById("question").innerText = ${a} + ${b} × ${c};
-    document.getElementById("question").style.fontSize = "22px"; // enlarge question
-    document.getElementById("questionNumber").innerText = Question ${questionCount + 1} of ${maxQuestions};
+    document.getElementById("question").innerText = `${a} + ${b} × ${c}`;
+    document.getElementById("question").style.fontSize = "22px"; // larger question
+    document.getElementById("questionNumber").innerText = `Question ${questionCount + 1} of ${maxQuestions}`;
 
-    // Generate options array and shuffle
     let options = [correct, correct + 2, correct - 2, correct + 5];
     options = shuffleArray(options);
 
@@ -98,8 +96,9 @@ function checkAnswer(selected, btn) {
         document.getElementById("result").innerText = "✅ Correct!";
         btn.classList.add("correct");
     } else {
-        document.getElementById("result").innerText = ❌ Wrong! Correct is ${correct};
+        document.getElementById("result").innerText = `❌ Wrong! Correct is ${correct}`;
         btn.classList.add("wrong");
+
         // Highlight correct option
         let buttons = document.querySelectorAll("#options button");
         buttons.forEach(b => {
@@ -107,8 +106,8 @@ function checkAnswer(selected, btn) {
         });
     }
 
-    // Update score out of total questions
-    document.getElementById("scoreBox").innerText = Score: ${score} / ${maxQuestions};
+    // Show score out of total questions
+    document.getElementById("scoreBox").innerText = `Score: ${score} / ${maxQuestions}`;
 
     // Show next button after 600ms
     setTimeout(() => {
@@ -129,88 +128,5 @@ function endGame() {
     document.getElementById("nextBtn").style.display = "none";
 
     let message = (score >= maxScoreToPass) ?
-        🎉 Great! You passed Level ${level} :
-        😢 Try again! You needed at least ${maxScoreToPass} correct answers.;
-
-    document.getElementById("finalMessage").innerText = message;
-    document.getElementById("endScreen").style.display = "block";
-// Show buttons conditionally
-    let buttons = document.querySelectorAll("#endScreen button");
-    buttons.forEach(btn => btn.style.display = "none"); // hide all first
-
-    if (score >= maxScoreToPass) {
-        // show both "Next Level" and "Replay Level"
-        document.querySelector("#endScreen button:nth-child(2)").style.display = "inline-block"; // Go to Next Level
-        document.querySelector("#endScreen button:nth-child(3)").style.display = "inline-block"; // Play Level Again
-    } else {
-        // only show "Play Level Again"
-        document.querySelector("#endScreen button:nth-child(3)").style.display = "inline-block"; 
-    }
-}
-
-// Next level
-function nextLevel() {
-    if (level < maxLevel) {
-        level++;
-        resetGame();
-    } else {
-        showCompletion();
-    }
-}
-
-// Restart current level
-function restartLevel() {
-    resetGame();
-}
-
-// Reset game state
-function resetGame() {
-    score = 0;
-    questionCount = 0;
-    document.getElementById("scoreBox").innerText = Score: 0 / ${maxQuestions};
-    document.getElementById("level").innerText = Level: ${level};
-    document.getElementById("endScreen").style.display = "none";
-    generateQuestion();
-}
-
-// Show completion / exit screen
-function showCompletion() {
-    document.getElementById("gameContent").style.display = "none";
-    document.getElementById("instructions").style.display = "none";
-
-    let oldExit = document.getElementById("exitScreen");
-    if (oldExit) oldExit.remove();
-
-    let exitDiv = document.createElement("div");
-    exitDiv.id = "exitScreen";
-
-    let heading = document.createElement("h2");
-    heading.innerText = "🎉 Congratulations! You completed all levels!";
-    exitDiv.appendChild(heading);
-
-    let p = document.createElement("p");
-    p.innerText = Your final score: ${score} / ${maxQuestions};
-    exitDiv.appendChild(p);
-
-    let btn1 = document.createElement("button");
-    btn1.innerText = "Play Again 🔁";
-    btn1.onclick = restartGame;
-    exitDiv.appendChild(btn1);
-
-    let btn2 = document.createElement("button");
-    btn2.innerText = "Exit ❌";
-    btn2.onclick = exitGame;
-    exitDiv.appendChild(btn2);
-
-    document.getElementById("game").appendChild(exitDiv);
-}
-
-// Restart whole game
-function restartGame() {
-    location.reload();
-}
-
-// Exit game
-function exitGame() {
-    alert("Thanks for playing! 👋");
-}
+        `🎉 Great! You passed Level ${level}` :
+        `😢 Try again! You needed a
