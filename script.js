@@ -11,6 +11,7 @@ let correct;
 
 // Start game
 function startGame() {
+    alert("start game clicl");
     document.getElementById("instructions").style.display = "none";
     document.getElementById("gameContent").style.display = "block";
     resetGame();
