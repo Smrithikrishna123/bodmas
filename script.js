@@ -13,7 +13,8 @@ let a, b, c, correct;
 function startGame() {
     document.getElementById("instructions").style.display = "none";
     document.getElementById("gameContent").style.display = "block";
-    resetGame();
+    resetGame();          // resets score and level display
+    generateQuestion();   // generate the first question immediately
 }
 
 // Start timer for each question
@@ -168,7 +169,7 @@ function resetGame() {
     document.getElementById("score").innerText = `0 / ${maxQuestions}`;
     document.getElementById("level").innerText = `Level: ${level}`;
     document.getElementById("endScreen").style.display = "none";
-    generateQuestion();
+    // generateQuestion();  <-- remove this line
 }
 
 // Show completion / exit screen
