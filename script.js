@@ -1,80 +1,55 @@
-// Show buttons conditionally
-    let buttons = document.querySelectorAll("#endScreen button");
-    buttons.forEach(btn => btn.style.display = "none"); // hide all first
+<!DOCTYPE html>
+<html>
+<head>
+    <title>BODMAS Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-    if (score >= maxScoreToPass) {
-        // show both "Next Level" and "Replay Level"
-        document.querySelector("#endScreen button:nth-child(2)").style.display = "inline-block"; // Go to Next Level
-        document.querySelector("#endScreen button:nth-child(3)").style.display = "inline-block"; // Play Level Again
-    } else {
-        // only show "Play Level Again"
-        document.querySelector("#endScreen button:nth-child(3)").style.display = "inline-block"; 
-    }
-}
+<h1>BODMAS Game 🎮</h1>
 
-// Next level
-function nextLevel() {
-    if (level < maxLevel) {
-        level++;
-        resetGame();
-    } else {
-        showCompletion();
-    }
-}
+<div id="game">
 
-// Restart current level
-function restartLevel() {
-    resetGame();
-}
+    <!-- Instructions -->
+    <div id="instructions">
+        <h2>Instructions</h2>
+        <p>Welcome to the BODMAS Game!</p>
+        <ul>
+            <li>There are 10 questions per level.</li>
+            <li>Level 1: 10 seconds per question</li>
+            <li>Level 2: 20 seconds per question</li>
+            <li>You need at least 5 correct answers to pass the level</li>
+            <li>After passing, you can go to the next level or replay the level</li>
+        </ul>
+        <button id="startBtn" onclick="startGame()">I Understand / Start Game</button>
+    </div>
 
-// Reset game state
-function resetGame() {
-    score = 0;
-    questionCount = 0;
-    document.getElementById("scoreBox").innerText = Score: 0 / ${maxQuestions};
-    document.getElementById("level").innerText = Level: ${level};
-    document.getElementById("endScreen").style.display = "none";
-    generateQuestion();
-}
+    <!-- Game content -->
+    <div id="gameContent" style="display:none;">
+        <p id="level">Level: 1</p>
+        <p id="questionNumber">Question 1 of 10</p>
+        <p id="question">Question will appear here</p>
 
-// Show completion / exit screen
-function showCompletion() {
-    document.getElementById("gameContent").style.display = "none";
-    document.getElementById("instructions").style.display = "none";
+        <p id="timerBox">⏱️ Time Left: <span id="timer">10</span>s</p>
 
-    let oldExit = document.getElementById("exitScreen");
-    if (oldExit) oldExit.remove();
+        <div id="options"></div>
 
-    let exitDiv = document.createElement("div");
-    exitDiv.id = "exitScreen";
+        <p id="result"></p>
 
-    let heading = document.createElement("h2");
-    heading.innerText = "🎉 Congratulations! You completed all levels!";
-    exitDiv.appendChild(heading);
+        <button id="nextBtn" onclick="generateQuestion()" style="display:none;">Next Question ➡️</button>
 
-    let p = document.createElement("p");
-    p.innerText = Your final score: ${score} / ${maxQuestions};
-    exitDiv.appendChild(p);
+        <p id="scoreBox">Score: 0 / 10</p>
 
-    let btn1 = document.createElement("button");
-    btn1.innerText = "Play Again 🔁";
-    btn1.onclick = restartGame;
-    exitDiv.appendChild(btn1);
+        <!-- End screen -->
+        <div id="endScreen" style="display:none;">
+            <h2 id="finalMessage"></h2>
+            <button onclick="nextLevel()">Go to Next Level 🚀</button>
+            <button onclick="restartLevel()">Play Level Again 🔁</button>
+        </div>
+    </div>
 
-    let btn2 = document.createElement("button");
-    btn2.innerText = "Exit ❌";
-    btn2.onclick = exitGame;
-    exitDiv.appendChild(btn2);
+</div>
 
-    document.getElementById("game").appendChild(exitDiv);
-}
-
-// Restart whole game
-function restartGame() {
-    location.reload();
-}
-
-// Exit game
-function exitGame() {
-    alert("Thanks for playing! 👋");
-}
+<script src="script.js"></script>
+</body>
+</html>
