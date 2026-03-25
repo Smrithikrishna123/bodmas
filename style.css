@@ -1,9 +1,7 @@
-/* ================================ */
-/* Body and general styles */
 body {
     text-align: center;
     font-family: Arial, sans-serif;
-    background-color: #f5f5f5;  /* solid light gray background */
+    background-color: #f5f5f5;
     margin: 0;
     padding: 0;
 }
@@ -26,7 +24,7 @@ h1 {
 
 /* Instructions block */
 #instructions {
-    text-align: left;           /* left-align text */
+    text-align: left;
     width: 80%;
     margin: 20px auto;
     padding: 15px;
@@ -39,7 +37,37 @@ h1 {
     text-align: center;
 }
 
-/* Start button - bubble style */
+/* Mode buttons */
+#modeBox {
+    text-align: center;
+    margin-top: 15px;
+}
+
+#playBtn, #learnBtn {
+    background-color: #37474F;
+    color: white;
+    font-size: 14px;
+    padding: 10px 18px;
+    border-radius: 50px;
+    border: none;
+    cursor: pointer;
+    margin: 5px;
+    transition: all 0.3s ease;
+}
+
+#playBtn:hover, #learnBtn:hover {
+    background-color: #263238;
+    transform: scale(1.05);
+}
+
+/* Selected glow */
+.activeMode {
+    transform: scale(1.08);
+    box-shadow: 0 0 10px rgba(55, 71, 79, 0.6),
+                0 0 20px rgba(55, 71, 79, 0.4);
+}
+
+/* Start button */
 #startBtn {
     background-color: #37474F;
     color: white;
@@ -58,22 +86,26 @@ h1 {
 #startBtn:hover {
     background-color: #263238;
     transform: scale(1.08);
-    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
 }
 
 #startBtn:active {
     transform: scale(0.95);
-    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
 }
 
-/* Question text enlarged */
+/* Disabled */
+#startBtn.disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Question */
 #question {
     font-size: 22px;
     font-weight: bold;
     margin: 20px 0;
 }
 
-/* Option buttons */
+/* Options */
 #options button {
     display: block;
     margin: 10px auto;
@@ -97,7 +129,7 @@ h1 {
     transform: scale(0.95);
 }
 
-/* Next button same as options */
+/* Next button */
 #nextBtn {
     background-color: #37474F;
     color: white;
@@ -109,7 +141,6 @@ h1 {
     display: block;
     width: 80%;
     margin: 20px auto;
-    transition: all 0.2s ease;
 }
 
 #nextBtn:hover {
@@ -117,49 +148,63 @@ h1 {
     transform: scale(1.05);
 }
 
-#nextBtn:active {
-    transform: scale(0.95);
-}
-
-/* Correct / Wrong feedback */
+/* Feedback */
 .correct {
     background-color: #4CAF50 !important;
-    animation: blinkGreen 0.5s;
-}
-
-@keyframes blinkGreen {
-    0% { background-color: #4CAF50; }
-    50% { background-color: #b6f1b2; }
-    100% { background-color: #4CAF50; }
 }
 
 .wrong {
     background-color: #f44336 !important;
-    animation: blinkRed 0.5s;
 }
 
-@keyframes blinkRed {
-    0% { background-color: #f44336; }
-    50% { background-color: #f7a3a3; }
-    100% { background-color: #f44336; }
-}
-
-/* Timer, score, question number */
+/* Text info */
 #result {
     font-weight: bold;
     margin-top: 10px;
 }
 
-#questionNumber, #level, #score, #timer {
+#questionNumber, #level, #scoreBox, #timer {
     font-weight: bold;
     margin: 5px 0;
 }
 
-/* End / Exit screen buttons */
-#endScreen, #exitScreen {
+/* End screen */
+#endScreen {
     margin-top: 20px;
 }
 
-#endScreen button, #exitScreen button {
+#endScreen button {
     margin: 10px;
+}
+/* MODE BUTTONS */
+.modeBtn {
+    display: block;
+    margin: 10px auto;
+    width: 80%;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    background-color: #37474F;
+    color: white;
+    transition: 0.3s;
+}
+
+.modeBtn:hover {
+    background-color: #263238;
+}
+
+/* SELECTED MODE GLOW */
+.modeSelected {
+    background-color: #263238 !important;
+    box-shadow: 0 0 15px rgba(255,255,255,0.6);
+    transform: scale(1.05);
+}
+
+/* DISABLED START BUTTON */
+#startBtn:disabled {
+    background-color: #888;
+    cursor: not-allowed;
+    box-shadow: none;
 }
