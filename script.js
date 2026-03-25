@@ -1,7 +1,3 @@
-/* ================================ */
-/* BODMAS Game Logic */
-/* ================================ */
-
 let score = 0;
 let level = 1;
 let questionCount = 0;
@@ -10,17 +6,38 @@ const maxScoreToPass = 5;
 let timeLeft = 10;
 let timer;
 let correct;
+let mode = null;
 
-// 1. Start game after instructions
+// SELECT MODE
+function selectMode(selectedMode, btn) {
+    mode = selectedMode;
+
+    // remove previous selection
+    document.querySelectorAll(".modeBtn").forEach(b => b.classList.remove("modeSelected"));
+
+    // highlight selected
+    btn.classList.add("modeSelected");
+
+    // enable start button
+    let startBtn = document.getElementById("startBtn");
+    startBtn.disabled = false;
+    startBtn.innerText = "Start Game 🚀";
+}
+
+// START GAME
 function startGame() {
+    if (!mode) return;
+
+    document.getElementById("modeSelection").style.display = "none";
     document.getElementById("instructions").style.display = "none";
     document.getElementById("gameContent").style.display = "block";
-    document.getElementById("endScreen").style.display = "none"; // Hide end screen if restarting
+    document.getElementById("endScreen").style.display = "none";
+
     resetGame();
     generateQuestion();
 }
 
-// 2. Reset stats for the level
+// RESET
 function resetGame() {
     score = 0;
     questionCount = 0;
@@ -28,9 +45,10 @@ function resetGame() {
     document.getElementById("level").innerText = `Level: ${level}`;
 }
 
-// 3. Timer for each question
+// TIMER
 function startTimer() {
-    // Level 1 = 10s, Level 2 = 20s
+    if (mode === "learn") return; // no timer in learning mode
+
     timeLeft = (level === 2) ? 20 : 10;
     document.getElementById("timer").innerText = timeLeft;
 
@@ -47,7 +65,7 @@ function startTimer() {
     }, 1000);
 }
 
-// 4. Generate a new question
+// GENERATE QUESTION
 function generateQuestion() {
     clearInterval(timer);
 
@@ -58,19 +76,19 @@ function generateQuestion() {
 
     document.getElementById("nextBtn").style.display = "none";
     document.getElementById("result").innerText = "";
+    document.getElementById("explanation").style.display = "none";
 
     let max = level * 10;
     let a = Math.floor(Math.random() * max) + 1;
     let b = Math.floor(Math.random() * max) + 1;
     let c = Math.floor(Math.random() * max) + 1;
 
-    // BODMAS: Multiplication happens first
     correct = a + (b * c);
 
     document.getElementById("question").innerText = `${a} + ${b} × ${c}`;
-    document.getElementById("questionNumber").innerText = `Question ${questionCount + 1} of ${maxQuestions}`;
+    document.getElementById("questionNumber").innerText =
+        `Question ${questionCount + 1} of ${maxQuestions}`;
 
-    // Create answer options
     let options = [correct, correct + 2, correct - 2, correct + 5];
     options = shuffleArray(options);
 
@@ -80,7 +98,7 @@ function generateQuestion() {
     options.forEach(opt => {
         let btn = document.createElement("button");
         btn.innerText = opt;
-        btn.onclick = () => checkAnswer(opt, btn);
+        btn.onclick = () => checkAnswer(opt, btn, a, b, c);
         optionsDiv.appendChild(btn);
     });
 
@@ -88,42 +106,53 @@ function generateQuestion() {
     startTimer();
 }
 
-// 5. Check selected answer
-function checkAnswer(selected, btn) {
+// CHECK ANSWER
+function checkAnswer(selected, btn, a, b, c) {
     clearInterval(timer);
     disableOptions();
 
     if (selected === correct) {
         score++;
         document.getElementById("result").innerText = "✅ Correct!";
-        btn.classList.add("correct"); // Triggers your CSS animation
+        btn.classList.add("correct");
     } else {
         document.getElementById("result").innerText = `❌ Wrong! Correct is ${correct}`;
-        btn.classList.add("wrong"); // Triggers your CSS animation
-        
-        // Highlight the actual correct button
+        btn.classList.add("wrong");
+
         let buttons = document.querySelectorAll("#options button");
-        buttons.forEach(b => {
-            if (parseInt(b.innerText) === correct) b.classList.add("correct");
+        buttons.forEach(bn => {
+            if (parseInt(bn.innerText) === correct)
+                bn.classList.add("correct");
         });
+    }
+
+    // 🔥 LEARNING MODE EXPLANATION
+    if (mode === "learn") {
+        let explanation = `
+Step 1: Multiply first → ${b} × ${c} = ${b*c}
+Step 2: Add → ${a} + ${b*c} = ${correct}
+        `;
+        let expBox = document.getElementById("explanation");
+        expBox.innerText = explanation;
+        expBox.style.display = "block";
     }
 
     updateScoreUI();
     document.getElementById("nextBtn").style.display = "block";
 }
 
-// 6. Update the Score UI (Matches your HTML ID scoreBox)
+// SCORE
 function updateScoreUI() {
-    document.getElementById("scoreBox").innerText = `Score: ${score} / ${maxQuestions}`;
+    document.getElementById("scoreBox").innerText =
+        `Score: ${score} / ${maxQuestions}`;
 }
 
-// 7. Utility: Disable buttons after clicking
+// DISABLE OPTIONS
 function disableOptions() {
-    let buttons = document.querySelectorAll("#options button");
-    buttons.forEach(btn => btn.disabled = true);
+    document.querySelectorAll("#options button").forEach(btn => btn.disabled = true);
 }
 
-// 8. Utility: Shuffle Options
+// SHUFFLE
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         let j = Math.floor(Math.random() * (i + 1));
@@ -132,7 +161,7 @@ function shuffleArray(array) {
     return array;
 }
 
-// 9. End Level Logic
+// END GAME
 function endGame() {
     clearInterval(timer);
     document.getElementById("options").innerHTML = "";
@@ -140,19 +169,21 @@ function endGame() {
     document.getElementById("endScreen").style.display = "block";
 
     let finalMsg = document.getElementById("finalMessage");
+
     if (score >= maxScoreToPass) {
         finalMsg.innerText = `🎉 Level ${level} Passed! Score: ${score}/${maxQuestions}`;
     } else {
-        finalMsg.innerText = `❌ Level Failed! Score: ${score}/${maxQuestions}. Try again!`;
+        finalMsg.innerText = `❌ Failed! Score: ${score}/${maxQuestions}`;
     }
 }
 
-// 10. Navigation functions
+// NEXT LEVEL
 function nextLevel() {
-    level = 2; // Sets it to level 2
+    level = 2;
     startGame();
 }
 
+// RESTART
 function restartLevel() {
-    startGame(); // Restarts the current level
+    startGame();
 }
